@@ -1,0 +1,873 @@
+Welcome to AU294 
+Red Hat Enterprise Linux Automation with Ansible
+
+
+RHEL 10.0
+Ansible AAP Ansible Automation Platform
+
+
+
+rol.redhat.com
+
+AU294			Ansible with Managed Hosts Linux
+DO417			Ansible with Managed Hosts Windows
+DO457			Ansible with Managed Hosts Network Devices
+DO374			Advanced Ansible Collection/ AAP
+DO467			AAP Controller/Tower Workflow
+
+
+Name:
+Org: If Possible
+Experience / Pre-Requisites:
+
+	Red Hat Certified System Administrator (EX200/RHCSA) certification or equivalent Red Hat Enterprise Linux knowledge and experience. 
+	RH124 / RH134/ RH199/ Exp On Linux
+	vim ssh cp mv rm mkdir firewall-cmd yum/dnf systemctl/service Network
+	
+	Ansible / Ansible Controller/Ansible Tower
+	ansible-playbook / ansible-navigator / NEW
+	Containers/Docker Images (execution environments) Docker Podman crictl
+
+Expectations:
+Hobbies/ Interesting Things:
+Country/City/Timezone:
+
+
+		## Chapter 1: Introducing Ansible 
+
+Ansible Playbook/ IAC
+
+Remote Manual Tasks
+History of changes/Proper Documentation
+Integrate Multiple Team work
+
+
+
+Red Hat AAP2 Components:
+
+1. Ansible Core:
+	yum install ansible-core -y
+   ansible.builtin  Modules: provide bare minimum modules, plugins and key functions such as loops, conditionals
+
+	Earlier version upto 2.9, All modules were provided by RedHat. version of Modules was also problem. 
+	cisco device: IOS 10,11,12,13,14    IOS 1.12  IOS 2.2  
+
+	ALL Ansible Modules	=	Ansible Core (RedHat) + Other Specific Modules (Vendor Cisco,MYsql, MS, VMWare, Oracle, Juniper) 
+
+2. Ansible Content Collections:
+
+Ansible Content Collections made up of related modules, roles, and plug-ins for specific product with specific version (Device, OS etc )that are supported by the same group of developers. It provide flexibility to select different versions of collections for different version of Product( OS/Device)
+
+ansible.builtin is the only collection provided by ansible-core 
+
+
+Modules: Get copied to Managed Host and Make changes
+Plugin: Provide Support infrastructure on Control Node 
+
+Ansible Collections = Modules + Plugins + Ansible Roles
+Company/Org(Namespace).Product(collection_name)
+cisco.ios.
+cisco.eos
+cisco.catalystwan.
+redhat.insights
+
+3. Automation Content Navigator ( ansible-navigator )
+   This tool replaces and extends the functionality of several older command-line utilities
+   yum install ansible-navigator -y 
+  ansible-config		ansible-navigator config
+  ansible-inventory		ansible-navigator inventory
+  ansible-playbook		ansible-navigator run
+  ansible-doc			ansible-navigator doc 
+  ansible-lint			ansible-navigator lint
+
+  It separates the control node on which you run Ansible from the automation execution environment that runs it, by running your playbooks in a container. 
+  watch podman ps 
+
+4. Automation Execution Environments
+   An automation execution environment is a container image that contains Ansible Core, Ansible Content Collections, and any Python libraries, executables, or other dependencies needed to run your playbook
+  Container images can be downloaded from RedHat or custom build( ansible-builder)
+  Playbooks can be run on Automation Controller (formerly called Red Hat Ansible Tower) using Container Image
+  ansible-builder to create your own custom execution environments
+
+5. Automation Controller (Red Hat Ansible Tower or AWX community)
+   Used to run ansible playbook on Enterprise scale. It provides a web UI and a REST API that can be used to configure, run, and evaluate your automation jobs.
+   The new automation controller design separate the control node (providing the web UI and API) from the automation execution environments (now running
+in containers).
+	Ansible Controller ansible-navigator
+	Ansible Tower ansible-playbook
+   
+6. Ansible Automation Hub [ Image Registry + Galaxy ]
+	HUB= Execution Image + Collections
+   Place to distribute Ansible Collections and Container image registry for automation execution environments.
+   Ansible AUtomation Hub is provided by Redhat/Ansible Galaxy or can be Private Automation Hub within Organization
+
+7. Hosted Services
+
+   Red Hat Insights:  Keep checking Remote Systems to Understand automation code you are running and whether it is successful
+   Automation Services Catalog: Allow nontechnical users to trigger automation with a point-and-click tool based on ITSM standards
+
+
+
+
+Running Playbooks with Automation Content Navigator:
+
+Old Way:
+	This runs playbook on control node
+	ansible-playbook -i inventory playbook.yml
+New Way:
+	This runs playbook on Container using Image (ansible runner)
+	Interactive:
+	ansible-navigator run playbook.yml -i inventory -m interactive
+	## Go to specfic section by pressing :NUMBER
+		
+	Non Interactive:
+	ansible-navigator run playbook.yml -i inventory -m stdout
+
+
+Improving Portability with Automation Execution Environments: 
+  Instead of creating multiple Virtual environment to run playbooks for different version of ansible collections, python modules, developers can create the customized environment in a custom execution environment, test it with ansible-
+navigator, and distribute it to the automation controller as a container image.
+  Red Hat Ansible Automation Platform 2.0, this default environment includes Ansible Core 2.11 and a standard set of Red Hat Ansible Certified Content Collections.
+  Image can be download from Redhat/Private AUtomation Hub and used by providing --execution-environment-image (--eei) option to select a specific container image
+  Pull Image:
+   podman login registry.redhat.io(or Private AUtomation Hub)
+   podman pull REGISTRY/IMAGE:TAG
+
+
+
+Follow Diagram
+yum install ansible-core ansible-navigator python3 -y
+
+
+Collection are named as
+Namespace.collectionName
+Company(ORG).ProductName
+
+
+Module: Copied to Manages Hosts and Make changes example: ansible.builtin.copy
+Plugins: Provides Support Infrastructure        example: ansible.builtin.ssh
+
+
+		## Chapter 2: Implementing an Ansible Playbook
+
+
+## Section 1: Building an Ansible Inventory ##
+Inventory:
+	static inventory:
+		Default: /etc/ansible/hosts
+		custom:  -i Inventory_File_Path
+		
+		
+	IP and Hostname are treated as 2 different systems, even though it is same system
+	groups:   
+		
+		Two host groups always exist:
+		System Defined groups:  all,ungrouped
+		User Defined Groups:  YOUR_NAMES_PLEASE
+
+
+
+## List Inventory
+
+## New Way ##
+ansible-navigator inventory --graph -m stdout  -i INVENTORY_PATH(file/folder)
+ansible-navigator inventory --graph GROUP_NAME -m stdout -i INVENTORY_PATH(file/folder)
+ansible-navigator inventory --list --yaml -m stdout -i INVENTORY_PATH(file/folder)
+
+## Old Way ##
+ansible-inventory --list -i INVENTORY_PATH(file/folder)	//JSON format
+ansible-inventory --graph -i INVENTORY_PATH(file/folder)
+ansible-inventory --graph group -i INVENTORY_PATH(file/folder)
+ansible-inventory --host host -i INVENTORY_PATH(file/folder)
+ansible-inventory --list --yaml -i INI_inventory_file
+ansible 192.168.[/2-3].[/4-8] --list-hosts -i invenotry_file_path
+
+
+
+## Section 2: Managing Ansible Configuration Files## 
+
+Ansibler Navigator yml file Priority:
+1.	export ANSIBLE_NAVIGATOR_CONFIG=/tmp/ansible-navigator.yml
+	echo $ANSIBLE_NAVIGATOR_CONFIG
+2. 	Current Folder 
+	./ansible-navigator.yml
+3. 	Home Folder
+	~/.ansible-navigator.yml
+
+
+
+# Generate ansible-navigator.yml file
+
+ansible-navigator settings --effective --execution-environment-image utility.lab.example.com/ee-supported-rhel8:latest --pull-policy missing --mode stdout -i inventory  > stupid.yml
+mv stupid.yml ansible-navigator.yml
+
+---
+ansible-navigator:
+  ansible:
+    config:
+      path: ./ansible.cfg
+      help: false
+    inventory:
+      entries:
+      - ./INVENTORY_PATH(file/folder)
+      help: false
+  execution-environment:
+    container-engine: podman
+    enabled: true
+    image: utility.lab.example.com/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+  logging:
+    append: true
+    file: /home/student/grid/ansible-navigator.log
+    level: warning
+  mode: stdout
+  playbook-artifact:
+    enable: false
+    save-as: '{playbook_dir}/{playbook_name}-artifact-{time_stamp}.json'
+
+
+
+
+
+
+	Ansible configuration File:
+
+		ansible --version
+
+	Default File:		/etc/ansible/ansible.cfg			Level 1
+	User file(Home Dir):	~/.ansible.cfg					Level 2		// Hidden File
+	Project specific:	./ansible.cfg					Level 3		// Current Folder
+	Define Env Variable:	ANSIBLE_CONFIG      #=/tmp/ansible.config	Level 4
+
+
+
+
+[defaults]
+inventory=./INVENTORY_PATH(file/folder)
+remote_user=devops
+ask_pass=False
+forks=4
+# vault_password_file=./pass1.txt
+
+
+[privilege_escalation]
+become=false
+become_user=root
+become_ask_pass=false
+become_method=sudo
+             
+
+
+
+Process of Execution AD-hoc/Playbook
+1. Find ansible.cfg path
+2. Read that ansible.cfg
+3. findout parameters based on ansible.cfg e.q. inventory
+
+FOR ansible, IP/hostname/FQDN are different systems, it has no machanism touse ARP protocol to figure out that they are same system.
+play.yml
+servera				NOT Desired/ Make Changes
+servera.lab.example.com		Desired/NO Changes
+172.25.250.10			Desired/NO Changes
+
+
+
+
+
+		## Section 3: Writing and Running Playbooks ##
+vim ~/.vimrc
+  autocmd FileType yaml setlocal ai ts=2 sw=2 et cuc
+  set mouse=a
+
+ai : autoindent - copy the previous line's indentation
+ts=2 : tabstop - set the number of spaces that the Tab key uses, when pressed
+sw=2 : shiftwidth - number of spaces to use with autoindent
+et : expandtab - use the space character as whitespace instead of Tab
+cuc : cursorcolumn - highlight the column the cursor is on
+
+
+
+Playbook should follow 3 step
+
+				###############  Instructions to Run Playbook ###############
+
+
+###############  Step 1:  Check Syntax of Playbook ###############
+
+ansible-playbook install_httpd.yml --syntax-check
+ansible-navigator run first.yml -m stdout --syntax-check // CHeck Error
+ansible-navigator lint first.yml -m stdout // Check Error First then Check For Best Practises
+
+
+
+
+###############  Step 2:  Run Playbook in Simulation Mode (DRY RUN Or Prediction or Matrix Oracle) ###############
+###############  Step 2:  This Step only check in playbook if tasks will make any changes in managed hosts or not if run in real mode ###############
+
+ansible-playbook install_httpd.yml --check
+ansible-navigator run convert_adhoc_to_play.yml --check
+				#### OR ####
+
+ansible-playbook install_httpd.yml -C
+ansible-navigator run convert_adhoc_to_play.yml -C
+
+###############  Step 3:  Run Playbook in Real Mode ###############
+
+ansible-playbook install_httpd.yml 
+ansible-playbook install_httpd.yml --step  ## LOOKS GOOD AND COOL
+ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook abc.yaml
+ansible-navigator run convert_adhoc_to_play.yml
+
+## List Tasks
+ansible-navigator run convert_adhoc_to_play.yml --list-tasks
+
+## Run playbook from Specific Task
+ansible-navigator run convert_adhoc_to_play.yml --start-at-task="TASK NAME"
+
+## List hosts for Play
+ansible-navigator run convert_adhoc_to_play.yml --list-hosts
+
+## Run Playbook step by step
+ansible-navigator run convert_adhoc_to_play.yml --step
+
+
+Special Modules ( DO NOT USE THESE MODULES UNTIL YOU HAVE TO )
+
+these 3 modules are NOT idempotent [DO NOT check current state]
+1. ansible.builtin.command ## Status is always "changed"
+2. ansible.builtin.shell  ## Status is always "changed"
+3. ansible.builtin.raw: IF python NOT available on Managed Hosts, DIRTY LOW LEVEL execution of python installation on Managed Hosts
+
+@@ USEFUL Command
+ ansible-playbook first.yml --check --limit servera --start-at-task="Content in file" --diff --step
+
+Flow:
+ansible.cfg -> Knows other parameters (Inventory,esclation) -> Inventory File(Must have hosts of playbook) -> playbook
+
+
+
+pae true   json but no User Interaction //production
+pae false  NO json file but user interaction // developer
+
+
+
+
+			## Chapter 3:  Managing Variables and Facts ##
+
+		## Section 1: Managing Variables ##
+
+Scope of Variables:
+
+https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
+
+Ansible Config Scope: in ansible.cfg/command line inbuild ansible paramters
+
+	## 	Variable Scope:		##
+	
+Role Scope:		In roles structure (defaults/main.yml and vars/main.yml)
+Host/Inventory Scope:	Inventory where hosts are defined
+Play Scope:		In Playbook
+Global Scope:		Command Line  OR RUN Time
+
+		Scope of Variables:
+Host Scope <  Play Scope  < Global Scope
+
+
+1.	Host Scope		// Inventory File , group_vars, host_vars
+
+	A.	Group_inventory: 		inventory File_ group variable		use = symbol (if using ini format inventory)
+											[groupname:vars]
+											var1="somevalue"
+		
+	B.	Group_group_vars_folder: 	group_vars/{{groupname}}(.yml)		use : symbol
+			
+	C.	host inventory variable		use = symbol
+	D.	host_vars folder		host_vars/{{servername}}.yml		use : symbol
+
+
+2. 	Play Scope (Playbook)
+	A.	vars:
+	B. 	Vars_Prompt:	// prompt user to enter value //Interactive // Good for Development Env
+		
+	C.	vars_files:
+		- file_path
+		
+	D:	Task Scope:
+		vars:
+		  variable_name: "Value"  ## For that Specific Task
+	E. 	Set Fact
+			set_fact:
+			  var1: "Some value you want to override"	
+3.	Global Scope (Command Line Values)
+	A.	ansible-playbook abc.yml -e 'var_name=some_value var2=someValue2 var3=someValue3' 
+	
+
+
+	
+	## Section 2: Managing Secrets ##
+	
+	
+Ansible Vault:
+		Create/Encrypt File:
+
+ansible-vault create secret.yml							//new File Interactive
+ansible-vault create secret.yml	--vault-password-file=somepass.txt		//new File // Non Interactive
+ansible-vault encrypt secret.yml						//Existing File Prompt File already Exist
+ansible-vault encrypt secret.yml --vault-password-file=somepass.txt		//Existing File from some file Non Interactive
+ansible-vault view secret.yml							//see File ## vim will not work
+ansible-vault view secret.yml 	--vault-password-file=somepass.txt		//see File ## NON Interactive
+ansible-vault decrypt secret.yml --output=without_secret.yml			//decrypt File
+ansible-vault edit secret.yml							//change File contents
+ansible-vault edit secret.yml	--vault-password-file=somepass.txt		//change File contents Non Interactive
+ansible-vault rekey secret.yml 							//change current password to new one
+ansible-vault rekey secret.yml 	--vault-password-file=pass1.txt --new-vault-password-file=pass2.txt //Non-Interactive
+ansible-vault encrypt_string vyos						//Encrypt password
+
+		Run a Encrypted File:
+ansible-navigator run -m stdout secret.yml --ask-vault-pass			//single password on all files //Interactive
+ansible-navigator run -m stdout secret.yml --vault-password-file=pass1.txt	//single password on all files //Non-Interactive
+
+vim ansible.cfg
+[defaults]
+vault_password_file=PATH/pass1.txt
+
+	//Multiple password on one file	
+ansible-navigator run -m stdout secret.yml --vault-id 1@prompt --vault-id 2@prompt --vault-id 3@prompt --vault-id 4@prompt
+ansible-navigator run -m stdout secret.yml --vault-id 1@prompt --vault-id 2@prompt --vault-id 3@pass1.txt --vault-id 4@pass2.txt
+
+
+
+	## Section 3: Managing Facts ##
+	
+	
+System Variable is Ansible FACT i.e. OS, OS Version, RAM, HDD
+Custom Facts: /etc/ansible/facts.d/FILE_NAME.fact ## will be shown in ansible_local facts
+
+	Format to Access variable in Task
+	
+	Arch1           = {{ ansible_architecture }}
+	Arch2           = {{ ansible_facts.architecture }}
+	Arch3           = {{ ansible_facts['architecture'] }}
+	Date            = {{ ansible_facts['date_time']['date'] }}
+	Time            = {{ ansible_facts['date_time']['time'] }}
+	IP Address      = {{ ansible_facts['default_ipv4']['address'] }}
+
+Magic Variables:
+	hostvars: See tasks/TEMPLATE.j2
+	group_names: ansible serverc* -m ansible.builtin.debug -a 'var=group_names'
+	groups: ansible localhost -m ansible.builtin.debug -a 'var=groups["dev"]'
+	inventory_hostname:
+	
+
+
+		## Chapter 4: Implementing Task Control ##
+
+## Section 1: Writing Loops and Conditional Tasks ##
+Tasks:
+    - name: Print Simple List
+      when: item != "SOMETHING"
+      ansible.builtin.debug:
+        msg: "{{ item }}"
+      loop: "{{ simple_list }}"
+      # with_items: "{{ simple_list }}"
+ 
+    - name: Print Complex List
+      ansible.builtin.debug:
+        msg: "{{ item.fn }} = {{ item['ln']}}"
+      loop: "{{ complex_list }}"
+      # with_list: "{{ complex_list }}"
+ 
+    - name: Print User Dict
+      ansible.builtin.debug:
+        msg: "{{ item.key }} // {{ item['value'] }}"
+      loop: "{{ user_dict | dict2items }}"
+
+    - name: Print
+      ansible.builtin.debug:
+         msg: "eth{{ item }}"
+      with_sequence: start=0 end=5
+ 
+    - name: Print
+      ansible.builtin.debug:
+        msg: "{{ item }}"
+      with_fileglob: 
+        - "/etc/ssh/*"
+
+Conditions TASK:
+
+    - name: Start Web Service
+      become: true
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
+      when:
+        - captured.changed == true or ansible_facts['kernel'] > "5.10"
+        - ansible_facts['distribution'] in  os_list
+        - meme is not defined
+
+
+## Section 2: Implementing Handlers ##
+
+  tasks:
+    - name: Install Web Server
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+      become: true
+      notify:
+        - Start Web Service
+        - Package Installed
+ 
+    - name: Deploy Web App
+      ansible.builtin.copy:
+        dest: /var/www/html/index.html
+        content: "Hello Web App Again"
+        mode: "0644"
+      become: true
+      notify:
+        - Start Web Service
+        - App Deployed
+ 
+  handlers:
+    - name: Extra Handlers
+      ansible.builtin.debug:
+        msg: "No One Interested"
+ 
+    - name: App Deployed
+      ansible.builtin.debug:
+        msg: "App Deployed Success"
+ 
+    - name: Package Installed
+      ansible.builtin.debug:
+        msg: "Package Installed Success"
+ 
+    - name: Start Web Service
+      become: true
+      ansible.builtin.service:
+        name: httpd
+
+
+	## Section 3:  Handling Task Failure  ##
+	
+ignore_errors: Carry one with next tasks if any task fails 					## BOTH Play and Task Level
+force_handlers: Run the invoked handlers by previous task in case of failure of next task 	## Play Level Only
+failed_when: fail the task manually if output is NOT expected					## Task Level Only
+changed_when: change status of task from OK to CHANGED so that we can invoke handlers		## Task Level Only
+
+
+block:
+
+try 		block
+catch 		rescue
+finally		always
+block section: Tasks that always RUn
+rescue section: Tasks to ROLLBACK in case any task fails in block Section
+always section: Task always run 
+
+## Chapter 5: Deploying Files to Managed Hosts ##
+
+## Section 1: Modifying and Copying Files to Hosts ##
+blockinfile,copy,fetch,file,lineinfile,stat,patch,synchronize
+ansible-navigator doc MODULE_NAME -m stdout
+
+
+## Section 2: Deploying Custom Files with Jinja2 Templates ##
+
+
+        {# System Information Page #}
+<html>
+<head>
+<title>This is Index Info Page</title>
+</head>
+<body>
+
+{% for sys in groups["all"] %}
+  {% if sys in groups["control"] %}
+
+     ## Control Node Info for {{ hostvars[sys].inventory_hostname }} ##
+
+     System Var      = {{ sys }}
+     Magic Variable  = {{ hostvars[sys].inventory_hostname }}
+     Arch1           = {{ hostvars[sys].ansible_architecture }}
+     Arch2           = {{ hostvars[sys].ansible_facts.architecture }}
+     Arch3           = {{ hostvars[sys].ansible_facts['architecture'] }}
+     FQDN            = {{ hostvars[sys].ansible_facts['fqdn'] }}
+     Hostname        = {{ hostvars[sys].ansible_hostname }}
+     User Name       = {{ hostvars[sys].ansible_facts.ansible_local.company.user.emp_name | default("Not Available") }}
+     Dept Manager    = {{ hostvars[sys].ansible_facts.ansible_local.company.dept.dept_manager | default("Not Available") }}
+
+  {% endif %}
+{% endfor %}
+
+
+{% for sys in groups["all"] %}
+  {% if sys not in groups["control"] %}
+
+     ## Managed Host Info for {{ hostvars[sys].inventory_hostname }} ##
+
+     System Var      = {{ sys }}
+     Magic Variable  = {{ hostvars[sys].inventory_hostname }}
+     Arch1           = {{ hostvars[sys].ansible_architecture }}
+     Arch2           = {{ hostvars[sys].ansible_facts.architecture }}
+     Arch3           = {{ hostvars[sys].ansible_facts['architecture'] }}
+     Python Ver      = {{ hostvars[sys].ansible_facts['python_version'] }}
+     User Name       = {{ hostvars[sys].ansible_facts.ansible_local.company.user.emp_name | default("Not Available") }}
+     Dept Manager    = {{ hostvars[sys].ansible_facts.ansible_local.company.dept.dept_manager | default("Not Available") }}
+
+  {% endif %}
+{% endfor %}
+</body>
+</html>
+
+
+## Template Task ##
+    - name: Deploy Template File
+      ansible.builtin.template:
+        src: ./j2/complex.j2
+        dest: /tmp/system_info.html
+      when: inventory_hostname in groups["control"]
+
+
+
+
+## Chapter 6: Managing Complex Plays and Playbooks ##
+
+
+## Section 2: Including and Importing Files ##
+https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html
+
+	Import						Include
+	static inclusion of tasks/			Dynamic inclusion of tasks/
+	Task available at pre-processing time		Task available at Runtime/execution time
+
+
+Import (ansible.builtin.import_tasks, ansible.builtin.import_role)
+
+For Development Environment
+static/Pre-process inclusion of tasks(you know tasks in advance) ansible-navigator run integration_play.yml --list-tasks
+--start-at-task can be used to start execution of playbook at certain point
+ansible-playbook abc.yml --syntax-check    ## also check syntax of imported Task file
+ansible-navigator lint integration_play.yml    ## also check syntax of imported Task file
+4  task in external file ## Condition checked on all task one by one although condition is false
+Might take more time
+Can not loop for importing files
+
+include (ansible.builtin.include_tasks, ansible.builtin.include_role)
+
+For Production Environment
+Dynamic/RunTime inclusion of tasks(you DO NOT know tasks in advance) ansible-navigator run integration_play.yml --list-tasks
+--start-at-task doesn't work as task names are NOT known in advance
+ansible-playbook abc.yml --syntax-check    ## DOES NOT check syntax of included Task file
+ansible-navigator lint integration_play.yml    ## DOES NOT check syntax of included Task file
+4  task in external file ## Condition checked only once, if false file tasks are not included in execution of playbook
+Time efficient
+Can loop for including files
+
+ansible.builtin.import_playbook: playbook can only be imported NOT included
+
+
+
+## Chapter 7: Simplifying Playbooks with Roles and Ansible Content Collections ##
+
+
+## Section 1: Describing Role Structure
+
+	AND
+## Section 2: Creating Roles ##
+
+Reusability/ROLE
+
+Trivial Copy:
+1. for Sender: Security Issue for sharing variables,hosts, users,passwords
+2. for receiver: Understand the whole big playbook, change accordingly, too many tasks for many issues (oracle,web,network,security) 
+
+
+task/other things only for specific purpose
+e.g. Webserver/FTPServer/Load Balancer
+
+
+Webserver -> FTPServer  -> MYSQL Server -> Load Balancer
+
+  roles:
+    - role: ROLE_NAME
+
+  tasks:
+    - name: Import/Include a Role
+      # ansible.builtin.import_role:
+      ansible.builtin.include_role:
+        name: ROLE_NAME
+      when: youme is not defined
+
+
+defaults: 	define variables in main.yml LEVEL-2 Priority
+vars:		define variables in main.yml but highter priority than defaults LEVEL-15 Priority
+tasks:		TASK file, write tasks in main.yml 
+handlers:	define handlers in main.yml which will be invoked by tasks in main.yml
+meta:		Define Dependency roles
+templates:	only template files .j2
+
+
+## Create Skeleton for Role ##
+ ansible-galaxy role init web_server --init-path PATH/roles/
+
+
+## Tasks Execution Order ##
+
+1. Pre Tasks:
+2. Pre Tasks Notified Handlers
+
+3. Call All Dependency Role Tasks First
+4. Call Main Role Tasks 
+5. Playbook Extra Tasks
+
+6. Run All Dependency Role Handler
+7. Run Main  Role Handler
+8. Extra Task Playbook Handler
+
+9. Post Tasks
+10.Post Tasks Notified Handlers
+
+
+## 
+ansible.cfg
+[defaults]
+roles_path=ROLE_PATH1:/usr/share/ansible/roles:/etc/ansible/roles:ROLE_PATH4
+
+
+Section 3: Deploying Roles from External Content Sources ##
+Private Role/organisational Role/Custom Roles
+Public Roles/Ansible Galaxy/No Support
+Redhat Subscribed Roles/Support
+
+
+## Searching for Roles ##
+ansible-galaxy search vpn --platforms EL
+
+## Install ROLES via requirements.yml File
+ansible-galaxy role install --role-file PATH/requirements.yml --roles-path  PATH/
+
+## Remove Role from Local Folder
+ansible-galaxy role remove sangmin_mysql -p external_roles
+
+
+Private Roles	OWN		/home/student/.ansible/roles:Custom_Path
+Redhat Roles	Paid		/usr/share/ansible/roles
+Ansible Galaxy	Free		/etc/ansible/roles
+			./roles
+
+## Section 4: Getting Roles and Modules from Content Collections ##
+
+Ansible Collections = Modules + Plugins + Roles
+Namespace[org/company].Product.Module/Plugin/Role
+cisco.ios.modules
+redhat.virt.
+
+
+
+## Section 5: Reusing Content with System Roles ##
+
+Redhat Roles:
+1. Install package: dnf install rhel-system-roles -y ## Till ansible 2.9
+2. Install Collection:  ansible-galaxy collection install ~/role-system/redhat-rhel_system_roles-1.19.3.tar.gz -p collections/
+
+
+sudo yum install rhel-system-roles
+ll /usr/share/ansible/roles/rhel-system-roles.timesync
+
+
+## Roles and collection in same File
+
+collections/requirements.yml
+---
+collections:
+  - name: cisco.catalystwan
+    version: 0.3.1
+   
+  - name: /home/student/Downloads/ansible-memsource-1.0.1.tar.gz
+   
+  # - name: community.mysql
+  - name: community.zabbix
+   
+   
+roles:
+  - name: navdeepsachdeva.windows_iis
+  - name: geerlingguy.php
+
+
+  ansible-galaxy role install -r collections/requirements.yml -p roles/
+  ansible-galaxy collection install -r collections/requirements.yml -p collections/
+
+
+## Chapter 8: Troubleshooting Ansible ##
+
+## Section 1: ##
+ansible-navigator.yml
+  playbook-artifact:
+    enable: true/false
+
+ansible-navigator run variable_demo.yml --playbook-artifact-enable/--pae true/false
+
+
+pae = true  	Log File but NO User interaction
+pae = false  	NO Log File but User interaction
+
+
+## Section 2: Using Check Mode as a Testing Tool ##
+Check Mode:
+Tries to predict/simulation final execution but doesn't make any change
+If a task has check_mode: true set, it always runs in its check mode and does not
+perform any action, even if you do not pass the --check option to ansible-navigator.
+Assume 4 tasks:
+
+third task is dependent on first task
+Run first Task in READ Mode and rest in check mode.
+
+
+## Template Difference ##
+ansible-navigator run template_demo.yml --check --diff
+
+## Ad-Hoc Command
+ansible servera.lab.example.com   -i ./tom_inventory --module-name ansible.builtin.user --args 'name=sangmin state=absent ' --user devops  --become --become-user=root --become-method=sudo --ask-pass --ask-become-pass 
+
+
+## Chapter 9: Automating Linux Administration Tasks ##
+
+## Section 1: Managing Software and Subscriptions ##
+
+Hardware Facts:		ansible.builtin.setup
+Package Facts:		ansible.builtin.package_facts 	"{{ ansible_facts.packages.httpd[0]['version'] }}"
+Service Facts:		ansible.builtin.service_facts	{{ ansible_facts['services']['httpd.service']['state'] 
+
+## Debug Strategy
+ls /usr/lib/python3.9/site-packages/ansible/plugins/strategy/
+
+See File debug_strategy_demo.yml
+
+
+
+
+Scripts are written in Python normally. bash 
+https://github.com/ansible/ansible/tree/stable-2.9/contrib/inventory
+https://docs.ansible.com/ansible/latest/inventory_guide/intro_patterns.html
+
+
+
+Announcement: LABS
+
+Chapter 7:
+	7.9. Lab: Reusing Code with Ansible Roles and Content Collections
+	
+Chapter 8:
+	
+	8.6. Guided Exercise: Automating User Management and Authentication Tasks
+	8.8. Guided Exercise: Automating the Boot Process and Scheduled Processes
+	8.10. Guided Exercise: Automating Storage Tasks
+	8.12. Guided Exercise: Automating Network Configuration Tasks
+	8.13. Lab: Automating Linux Administration Tasks
+
+Chapter 9: 
+	9.2. Lab: Deploying Ansible
+	9.3. Lab: Creating Playbooks
+	9.4. Lab: Managing Linux Hosts and Using System Roles
+	9.5. Lab: Creating Role
