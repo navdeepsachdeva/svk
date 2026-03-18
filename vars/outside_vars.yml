@@ -1,0 +1,53 @@
+floor_level: "Level 14 Play vars_files"
+# floor_level: "PROVIDE YOUR VALUE"
+
+simple_list:
+  - Alexander
+  - Edip
+  - Gunnar
+  - Marie
+
+complex_list:
+  - fn: Alexander
+    ln: Ismael
+    id: 1201
+  - fn: Edip
+    ln: Isacson
+    id: 1202
+  - fn: Gunnar
+    ln: Gunnarsson
+    id: 1203
+  - fn: Marie
+    ln: Forsling
+    id: 1204
+
+user_dict:
+  Alexander: Ismael
+  Edip: Isacson
+  Gunnar: Gunnarsson
+  Marie: Forsling
+  # key: value
+
+users:
+  bjones:
+    first_name: Bob
+    last_name: Jones
+    home_dir: /users/bjones
+  acook:
+    first_name: Anne
+    last_name: Cook
+    home_dir: /users/acook
+
+users_array_list:
+  - name: epid
+    uid: 1100
+  - name: marie
+    uid: 1200
+somevar: youme123
+# somevar: !vault |
+#                   $ANSIBLE_VAULT;1.1;AES256
+#                   32396535653232383930303733623965306133316162616139363036346263346262336635386532
+#                   3665333836313466653032636163346462646637376138620a386666356262396165613230626565
+#                   66636339373439656466663233303032323838353236303663626531306164353762643834653264
+#                   6135633234373630330a633138303938366366613964333432643064666563313338343161313965
+#                   6631

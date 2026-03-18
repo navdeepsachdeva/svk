@@ -1,0 +1,24 @@
+utility.lab.example.com
+
+[stockholm]
+serverb.lab.example.com ansible_port=33
+
+[all:vars]
+floor_level="Level 3 Inventory file"
+
+[dev]
+servera.lab.example.com
+serverd.lab.example.com floor_level="Level 8 Inventory file SERVER D"
+serverb.lab.example.com ansible_port=22
+
+[borlange]
+serverc.lab.example.com
+
+
+# [combine:children]
+# stockholm
+# borlange
+
+# [range]
+# 192.168.[1:4].[5:8]
+# system[1:10:3].example.com

@@ -1,0 +1,7 @@
+---
+- name: Testing authentication with test servers
+  hosts: test
+  gather_facts: false
+  tasks:
+    - name: Ping test servers
+      ansible.builtin.ping:

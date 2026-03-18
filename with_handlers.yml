@@ -1,0 +1,41 @@
+- name: Dependency Task With Handlers
+  hosts: servera*
+  gather_facts: false
+  become: true
+  remote_user: devops
+
+  tasks:
+    - name: Install Web Server
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+      notify:
+        - Package Installed
+        - Start Web Service
+
+    - name: Deploy a Simple App
+      ansible.builtin.copy:
+        content: "Simple Index Page"
+        dest: /var/www/html/index.html
+      notify:
+        - App Installed
+        - Start Web Service
+
+  handlers:
+    - name: UseLess
+      ansible.builtin.debug:
+        msg: "No One Needs this Guy"
+    
+    - name: App Installed
+      ansible.builtin.debug:
+        msg: "Success App Installed"
+
+    - name: Start Web Service
+      ansible.builtin.systemd_service:
+        name: httpd
+        state: restarted
+
+    - name: Package Installed
+      ansible.builtin.debug:
+        msg: "Success Package Installed"
+

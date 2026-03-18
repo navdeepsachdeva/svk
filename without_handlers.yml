@@ -1,0 +1,27 @@
+- name: Dependency Task Without Handlers Register
+  hosts: servera*
+  gather_facts: false
+  become: true
+  remote_user: devops
+  tasks:
+    - name: Install Web Server
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+      register: captured
+
+    - name: Print Output of Previous Task
+      ansible.builtin.debug:
+        var: captured
+
+    - name: Start Web Service
+      ansible.builtin.systemd_service:
+        name: httpd
+        state: restarted
+      when: captured.changed
+      # when: captured.changed == true
+
+    # - name: Deploy a Simple App
+    #   ansible.builtin.copy:
+    #     content: "Simple Index Page"
+    #     dest: /var/www/html/index.html

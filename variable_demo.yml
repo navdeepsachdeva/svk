@@ -1,0 +1,30 @@
+- name: Variable Demo
+  hosts: dev,borlange
+  gather_facts: false
+  vars:
+    floor_level: "Level 12 Play vars"
+    MYSQL_USER: user_dev
+  vars_prompt:
+    - name: floor_level
+      prompt: "Please Enter your Floor ?"
+      private: false
+
+  vars_files:
+    - vars/outside_vars.yml
+  tasks:
+    - name: Print
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} = {{ floor_level }}"
+
+    - name: Print AGAIN
+      ansible.builtin.debug:
+        msg: "{{ users.bjones.first_name }} = {{ users['acook']['first_name'] }}"
+
+    - name: Create File
+      ansible.builtin.copy:
+        content: "{{ inventory_hostname }} = {{ floor_level }} {{ somevar }}"
+        dest: /tmp/content.txt
+
+    - name: Print from List
+      ansible.builtin.debug:
+        msg: "{{ users_array_list[0]['name'] }} // {{ users_array_list[1]['uid']}}"

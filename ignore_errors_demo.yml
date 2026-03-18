@@ -1,0 +1,35 @@
+- name: Ignore Errors in Play Tasks
+  hosts: servera*
+  gather_facts: false
+  become: true
+  remote_user: devops
+  # Play Level Very Bad
+  # ignore_errors: true
+  tasks:
+    - name: Open Port
+      ansible.posix.firewalld:
+        service: httpdd
+        state: enabled
+        permanent: true
+        immediate: true
+      ignore_errors: true
+
+    - name: Install Web Server
+      ansible.builtin.dnf:
+        name: httpdddddddd
+        state: present
+
+    - name: Deploy a Simple App
+      ansible.builtin.copy:
+        content: "Simple Index Page"
+        dest: /var/wwwwwwwwwwwwww/html/index.html
+
+    - name: Second Page
+      ansible.builtin.copy:
+        content: "Testing"
+        dest: /var/wwwwwwwwwwwww/html/page1.html
+
+    - name: Start Web Service
+      ansible.builtin.systemd_service:
+        name: httpdddddddddd
+        state: started

@@ -1,0 +1,36 @@
+- name: Facts Demo
+  hosts: servera.lab.example.com
+  ## run ansible.builtin.setup module
+  gather_facts: false
+  tasks:
+    - name: Collect Selected Facts
+      ansible.builtin.setup:
+        gather_subset:
+          - 'min'
+          - 'network'
+          - 'hardware'
+    - name: Print Facts
+      ansible.builtin.copy:
+        content: |
+          Architecture        = {{ ansible_architecture }}
+          Architecture        = {{ ansible_facts.architecture }}
+          Architecture        = {{ ansible_facts['architecture'] }}
+          Date                = {{ ansible_facts['date_time']['date'] }}
+          Time                = {{ ansible_facts['date_time']['time'] }}
+          IP Address          = {{ ansible_facts['default_ipv4']['address'] }}
+          MAC Address         = {{ ansible_facts['default_ipv4']['macaddress'] }}
+          Hard Disk           = {{ ansible_facts['devices']['sda']['size'] }}
+          OS Type             = {{ ansible_facts['distribution'] }}
+          FQDN                = {{ ansible_facts['fqdn'] }}
+          Hostname            = {{ ansible_facts['hostname'] }}
+          Kernel              = {{ ansible_facts['kernel'] }}
+          Free Memory         = {{ ansible_facts['memory_mb']['real']['free'] }}
+          Total Memory        = {{ ansible_facts['memory_mb']['real']['total'] }}
+          Python Version      = {{ ansible_facts['python_version'] }}
+          User Laptop         = {{ ansible_facts.ansible_local.emp.user.emp_name }}
+          User Manager        = {{ ansible_facts.ansible_local.emp.dept.dept_manager }}
+        dest: /tmp/info.txt
+    - name: Run a task based on facts condition
+      ansible.builtin.debug:
+        msg: "I am working on  {{ ansible_facts['distribution'] }}"
+      when: ansible_python_version >= "3.12"

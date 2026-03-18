@@ -1,0 +1,21 @@
+---
+ansible-navigator:
+  ansible:
+    config:
+      help: false
+    inventory:
+      entries:
+      - ./svk_inventory
+      help: false
+  execution-environment:
+    container-engine: podman
+    enabled: true
+    image: utility.lab.example.com:5000/ansible-automation-platform-25/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+      arguments:
+        - "--tls-verify=false"
+  mode: stdout
+  playbook-artifact:
+    enable: false
+    save-as: '{playbook_dir}/{playbook_name}-artifact-{time_stamp}.json'

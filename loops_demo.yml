@@ -1,0 +1,31 @@
+- name: Loops Demo
+  hosts: servera*
+  gather_facts: false
+  vars_files:
+    - vars/outside_vars.yml
+  tasks:
+    - name: Loop via Simple List
+      ansible.builtin.debug:
+        msg: "{{ item }}"
+      loop: "{{ simple_list }}"
+      # with_items: "{{ simple_list }}"
+
+    - name: Loop via Complex List
+      ansible.builtin.debug:
+        msg: "{{ item.id }} // {{ item['fn'] }} // {{ item['ln'] }}"
+      loop: "{{ complex_list }}"
+      # with_list: "{{ complex_list }}"
+
+    - name: Loop via User Dict
+      ansible.builtin.debug:
+        msg: "{{ item['key'] }} ++ {{ item['value'] }}"
+      loop: "{{ user_dict | dict2items }}"
+      # with_dict: "{{ user_dict }}"
+      #
+    - name: Create Users
+      ansible.builtin.user:
+        name: "{{ item['fn'] | lower }}"
+        comment: "{{ item['fn'] }} // {{ item['ln'] }}"
+        uid: "{{ item.id }}"
+      loop: "{{ complex_list }}"
+      become: true

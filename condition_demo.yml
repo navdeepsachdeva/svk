@@ -1,0 +1,30 @@
+- name: Facts Demo
+  hosts: servera.lab.example.com
+  gather_facts: true
+  tasks:
+    - name: Install Web Server
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+      register: output
+      become: true
+
+    - name: Print Facts
+      ansible.builtin.debug:
+        msg: |
+          Architecture        = {{ ansible_facts['architecture'] }}
+          OS Type             = {{ ansible_facts['distribution'] }}
+          Hostname            = {{ ansible_facts['hostname'] }}
+          Free Memory         = {{ ansible_facts['memory_mb']['real']['free'] }}
+          Python Version      = {{ ansible_facts['python_version'] }}
+          User Laptop         = {{ ansible_facts.ansible_local.emp.user.emp_name }}
+
+
+    - name: Run a task based on facts condition
+      ansible.builtin.debug:
+        msg: "I am working on  {{ ansible_facts['distribution'] }}"
+      when:
+        - ansible_python_version >= "3.12"
+        - ansible_facts['memory_mb']['real']['free'] > 1200 or ansible_facts['distribution'] == "RedHat"
+        - output.changed == true or meme_var is not defined
+      # when: ansible_python_version >= "3.12" and ansible_facts['memory_mb']['real']['free'] > 1000

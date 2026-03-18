@@ -1,0 +1,19 @@
+---
+- name: Testing authentication with prod servers
+  hosts: servera*
+  gather_facts: false
+  tasks:
+    # - name: Install Web Package
+    #   ansible.builtin.dnf:
+    #     name: httpd
+    #     state: present
+
+    - name: Ping prod servers
+      ansible.builtin.ping:
+
+    - name: COPY
+      ansible.builtin.copy:
+        content: "Good Content"
+        dest: /tmp/f1
+        mode: "0644"
+

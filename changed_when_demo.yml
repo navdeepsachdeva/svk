@@ -1,0 +1,48 @@
+- name: Changed_when Output Changed  from OK to CHANGED
+  hosts: servera*
+  gather_facts: false
+  become: true
+  remote_user: devops
+
+  tasks:
+    - name: Install Web Server
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+      register: output
+      changed_when: output.changed == false
+      notify:
+        - Package Installed
+        - Start Web Service
+        - Another Handler
+
+    - name: Task that fails for some reason
+      ansible.builtin.debug:
+        msg: "{{ ansible_connection }}"
+
+    - name: Deploy a Simple App
+      ansible.builtin.copy:
+        content: "Simple Index Page"
+        dest: /var/www/html/index.html
+      notify:
+        - App Installed
+        - Start Web Service
+
+  handlers:
+    - name: Another Handler
+      ansible.builtin.debug:
+        msg: "Something Extra"
+
+    - name: App Installed
+      ansible.builtin.debug:
+        msg: "Success App Installed"
+
+    - name: Start Web Service
+      ansible.builtin.systemd_service:
+        name: httpd
+        state: restarted
+
+    - name: Package Installed
+      ansible.builtin.debug:
+        msg: "Success Package Installed"
+

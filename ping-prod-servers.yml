@@ -1,0 +1,12 @@
+---
+- name: Testing authentication with prod servers
+  hosts: prod
+  gather_facts: false
+  tasks:
+    - name: Ping prod servers
+      ansible.builtin.ping:
+    - name: COPY
+      ansible.builtin.copy:
+        content: "sdfjihajdsfhjhaf"
+        dest: /tmp/f1
+        mode: "0644"

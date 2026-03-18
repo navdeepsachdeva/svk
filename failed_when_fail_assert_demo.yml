@@ -1,0 +1,38 @@
+## Stop Playbook Forcefully if result not EXPECTED
+
+- name: Stop Playbook Forcefully failed_when / fail / assert
+  hosts: servera*
+  gather_facts: false
+  become: true
+  remote_user: devops
+  tasks:
+    - name: Install Web Server
+      ansible.builtin.dnf:
+        name: httpd
+        state: latest
+      register: captured
+      # failed_when: not captured.changed 
+
+    # - name: Nice Failed Message
+    #   ansible.builtin.fail:
+    #     msg: "Nice way to FAIL MOdule {{ captured.msg }}"
+    #   when: not captured.changed 
+
+    - name: Nice Failed/SUCESS Message
+      ansible.builtin.assert:
+        that:
+          - captured.changed 
+          - meme is not defined
+        fail_msg: "Nice Assert Module {{ captured.msg }}"
+        success_msg: "Hurray Everything Fine"
+
+    - name: Deploy a Simple App
+      ansible.builtin.copy:
+        content: "Simple Index Page"
+        dest: /var/www/html/index.html
+
+    - name: Start Web Service
+      ansible.builtin.systemd_service:
+        name: httpd
+        state: started
+

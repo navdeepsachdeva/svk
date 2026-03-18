@@ -1,0 +1,6 @@
+---
+- name: Sample playbook
+  hosts: prod
+  tasks:
+    - name: Testing Authentication
+      ansible.builtin.ping:

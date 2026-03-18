@@ -1,0 +1,66 @@
+- name: Configuration Play
+  hosts: servera*
+  gather_facts: false
+  become: true
+  remote_user: devops
+  tasks:
+    - name: Install Web Server
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+
+    - name: Deploy a Simple App
+      ansible.builtin.copy:
+        content: "Simple Index Page"
+        dest: /var/www/html/index.html
+
+    - name: Page 1 As it is
+      ansible.builtin.copy:
+        content: Some playbooks might use an earlier shorthand method to define tasks by putting the key-value pairs for the module on the same line as the module name
+        dest: /var/www/html/page1.html
+
+    - name: Page 2 Change New line to Space in file
+      ansible.builtin.copy:
+        content: >
+          Some playbooks might use an earlier
+          shorthand method to define tasks by putting
+          the key-value pairs for the module
+          on the same line as the module name
+        dest: /var/www/html/page2.html
+
+    - name: Page 3 Keep Format
+      ansible.builtin.copy:
+        content: |
+          Some playbooks might use an earlier
+          shorthand method to define tasks by putting
+          the key-value pairs for the module
+          on the same line as the module name
+        dest: /var/www/html/page3.html
+
+    - name: Start Web Service
+      ansible.builtin.systemd_service:
+        name: httpd
+        state: started
+
+    - name: Open Port
+      ansible.posix.firewalld:
+        service: http
+        state: enabled
+        permanent: true
+        immediate: true
+        
+- name: Test Play
+  hosts: serverb*
+  gather_facts: false
+  become: false
+  remote_user: student
+  tasks:
+    - name: Access Web Server
+      ansible.builtin.uri:
+        url: http://servera.lab.example.com
+        return_content: true
+      register: captured
+
+    - name: Print Output
+      ansible.builtin.debug:
+        var: captured.content

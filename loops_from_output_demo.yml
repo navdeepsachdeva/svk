@@ -1,0 +1,15 @@
+- name: Loop from Output Result
+  hosts: servera*
+  gather_facts: false
+  tasks:
+    - name: Looping Echo Task
+      ansible.builtin.shell: "{{ item }}"
+      loop:
+        - hostname
+        - pwd
+      register: captured
+
+    - name: Print the output
+      ansible.builtin.debug:
+        msg: "{{ item['start'] }} {{ item.item }} // {{ item.stdout }} // {{ item.end }}"
+      loop: "{{ captured.results }}"

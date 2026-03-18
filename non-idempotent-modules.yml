@@ -1,0 +1,21 @@
+- name: Non Idempotent Modules
+  hosts: servera*
+  gather_facts: false
+  tasks:
+    - name: Command vs curl Module BAD
+      ansible.builtin.command: curl servera.lab.example.com/page1.html
+
+    - name: Access Web Server GOOD
+      ansible.builtin.uri:
+        url: http://servera.lab.example.com
+        return_content: true
+
+    - name: Command Module
+      ansible.builtin.command: cp /etc/passwd /tmp/pass1
+      # ansible.builtin.command: tail -n 2 /etc/passwd
+
+    - name: Shell Module
+      ansible.builtin.shell: tail -n 2 /etc/group
+
+    - name: Install Python First
+      ansible.builtin.raw: dnf install python3 -y

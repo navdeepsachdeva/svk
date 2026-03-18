@@ -1,0 +1,63 @@
+- name: Block Demo
+  hosts: servera*
+  gather_facts: true
+  become: true
+  remote_user: devops
+  tasks:
+    - name: Task Outside Block 1
+      ansible.builtin.debug:
+        msg: "Task 1 Outside Block"
+
+    - name: Setup Web Server
+      when: ansible_facts['distribution'] == "RedHat"
+      block:
+        - name: Install Web Server
+          ansible.builtin.dnf:
+            name: httpd
+            state: present
+
+        - name: Deploy a Simple App
+          ansible.builtin.copy:
+            content: "Simple Index Page"
+            dest: /var/www/html/index.html
+
+        - name: Task that fails for some reason
+          ansible.builtin.debug:
+            msg: "{{ ansible_connection }}"
+
+        - name: Start Web Service
+          ansible.builtin.systemd_service:
+            name: httpd
+            state: started
+      rescue:
+        - name: Start Undo Everything
+          ansible.builtin.debug:         
+            msg: "MayDay MayDay"
+
+        - name: Undeploy App   
+          ansible.builtin.shell:  rm -rf /var/www/html/*
+
+        - name: Uninstall Web Server
+          ansible.builtin.dnf:
+            name: httpd
+            state: absent
+            autoremove: true
+
+      always:
+        - name: Inform Customers
+          ansible.builtin.debug:         
+            msg: "Something We Tried sending email"
+
+    - name: Task Outside Block 2
+      ansible.builtin.debug:
+        msg: "Task 2 Outside Block"
+        
+#     - name: Access Web Server
+#       ansible.builtin.uri:
+#         url: http://servera.lab.example.com
+#         return_content: true
+#       register: captured
+# 
+#     - name: Print Output
+#       ansible.builtin.debug:
+#         var: captured.content

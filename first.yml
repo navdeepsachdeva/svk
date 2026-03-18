@@ -1,0 +1,22 @@
+- name: First Playbook
+  # hosts: servera*,serverb*
+  hosts:
+    - servera*
+    # - serverb*
+  tasks:
+    # - means List#
+    - name: Create File me.txt
+      ansible.builtin.copy:
+        dest: /tmp/me.txt
+        content: "Hello Stockholm CLass"
+        mode: "0644"
+
+    - name: Download a File
+      ansible.builtin.get_url:
+        url: https://www.redhat.com/en/summit
+        dest: /tmp/
+        mode: "0644"
+
+    - name: Check Connectivity
+      ansible.builtin.uri:
+        url: http://www.google.com
