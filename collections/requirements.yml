@@ -1,0 +1,9 @@
+collections:
+  - name: cisco.catalystwan
+    version: 0.2.2
+  
+  - name: community.general
+  
+  - name: community.crypto
+  
+  - name: oracle.oci

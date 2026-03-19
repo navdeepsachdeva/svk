@@ -1,0 +1,9 @@
+- src: geerlingguy.mysql
+
+- src: navdeepsachdeva.windows_iis
+- src: robertdebock.oracle_instant_client
+
+- src: git@serverd.lab.example.com:infra/bash_env
+  scm: git
+  version: main
+  name: student.bash_env

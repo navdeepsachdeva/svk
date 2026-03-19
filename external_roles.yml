@@ -1,0 +1,5 @@
+- name: External ROles Test
+  hosts: servera*
+  roles:
+    - name: geerlingguy.mysql
+    - name: cisco.catalystwan.health_checks

@@ -1,0 +1,32 @@
+---
+galaxy_info:
+  author: Red Hat Training
+  description: Configures default initialization files for the Bash shell used for newly created users. Creates skeleton files in /etc/skel/ including .bashrc, .bash_profile, and .vimrc.
+  company: Red Hat
+  license: BSD
+  min_ansible_version: 2.9
+  
+  platforms:
+  - name: EL
+    versions:
+    - all
+    - 7
+    - 8
+    - 9
+  - name: Fedora
+    versions:
+    - all
+  - name: GenericLinux
+    versions:
+    - all
+    - any
+  
+  galaxy_tags:
+    - bash
+    - shell
+    - environment
+    - skel
+    - users
+    - configuration
+
+dependencies: []
