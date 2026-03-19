@@ -1,0 +1,4 @@
+---
+# defaults file for security
+security_package: firewalld
+security_port: http

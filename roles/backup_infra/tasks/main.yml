@@ -1,0 +1,7 @@
+---
+# tasks file for backup_infra
+
+- name: Take Infra Backup
+  ansible.builtin.template:
+    src: simple.j2
+    dest: /tmp/infra.txt

@@ -1,0 +1,18 @@
+# Collect Information for {{ inventory_hostname }} #
+My Floor Level is {{ floor_level }}
+Architecture        = {{ ansible_facts['architecture'] }}
+Date                = {{ ansible_facts['date_time']['date'] }}
+Time                = {{ ansible_facts['date_time']['time'] }}
+IP Address          = {{ ansible_facts['default_ipv4']['address'] }}
+MAC Address         = {{ ansible_facts['default_ipv4']['macaddress'] }}
+Hard Disk           = {{ ansible_facts['devices']['sda']['size'] }}
+OS Type             = {{ ansible_facts['distribution'] }}
+FQDN                = {{ ansible_facts['fqdn'] }}
+Hostname            = {{ ansible_facts['hostname'] }}
+Kernel              = {{ ansible_facts['kernel'] }}
+Free Memory         = {{ ansible_facts['memory_mb']['real']['free'] }}
+Total Memory        = {{ ansible_facts['memory_mb']['real']['total'] }}
+Python Version      = {{ ansible_facts['python_version'] }}
+User Laptop         = {{ ansible_facts.ansible_local.emp.user.emp_name }}
+User Manager        = {{ ansible_facts.ansible_local.emp.dept.dept_manager }}
+

@@ -1,0 +1,28 @@
+- name: Ping Playbook
+  ansible.builtin.import_playbook: ping-test-servers.yml
+
+- name: Large Integration Playbook
+  hosts: servera*
+  gather_facts: false
+  tasks:
+    ## Import/Include Task Files
+    # - name: Import/Static Task File
+    #   ansible.builtin.import_tasks:
+    #     file: tasks/ldap_setup.yml
+    #   when: myvar is not defined
+
+    # - name: Include/Dynamic Task File
+    #   ansible.builtin.include_tasks:
+    #     file: tasks/oracle_setup.yml
+    #   when: myvar is not defined
+
+    - name: Loop for Tasks File
+      # ansible.builtin.import_tasks:
+      ansible.builtin.include_tasks:
+        file: "{{ item }}"
+      loop:
+        - tasks/ldap_setup.yml
+        - tasks/oracle_setup.yml
+
+- name: Multiple Playbook
+  ansible.builtin.import_playbook: multiple_play.yml

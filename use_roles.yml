@@ -1,0 +1,57 @@
+- name: Roles Demo
+  hosts: servera*
+  gather_facts: true
+  roles:
+    - role: web_server
+      become: true
+      vars:
+        web_server_content: "Value from Play"
+
+  pre_tasks:
+    - name: Pre Tasks - Check Pre-requisites
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['architecture'] == "x86_64"
+          - ansible_facts['memory_mb']['real']['free'] >= 1000
+        fail_msg: "Not Enough Resources"
+        success_msg: "Hurray Good to Go"
+
+    - name: Pre Tasks - Backup Infra Role
+      ansible.builtin.include_role:
+        name: backup_infra
+
+    - name: Pre Tasks - Inform Customer
+      ansible.builtin.shell: sleep 2   
+      notify:
+        - services_down
+
+  post_tasks:
+    - name: Post Tasks - Update Customer 
+      ansible.builtin.shell: sleep 2   
+      notify:
+        - services_up
+
+  tasks:
+
+    - name: Extra Task
+      ansible.builtin.shell: sleep 2
+      notify:
+        - extra_handler
+
+    - name: Run a ROle Bases on Condition
+      ansible.builtin.import_role:
+        name: app_test
+      when: youme_var is not defined
+
+  handlers:
+    - name: extra_handler
+      ansible.builtin.debug:
+        msg: "Extra Handler from Extra Tasks"
+
+    - name: services_down
+      ansible.builtin.debug:
+        msg: "Instagram Down - Sleep Now"
+
+    - name: services_up
+      ansible.builtin.debug:
+        msg: "Instagram UP - Start Wasting Time"

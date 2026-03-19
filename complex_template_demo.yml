@@ -1,0 +1,18 @@
+- name: Complex Template Demo
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Collect Selected Facts
+      ansible.builtin.setup:
+        gather_subset:
+          - 'min'
+          - 'network'
+          - 'hardware'
+      when: inventory_hostname in groups["all"]
+
+    - name: Information Server
+      ansible.builtin.template:
+        src: j2/complex.j2
+        dest: /tmp/infra.txt
+      when: inventory_hostname in groups["control"]
+      # when: inventory_hostname == "workstation.lab.example.com"

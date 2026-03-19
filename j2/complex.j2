@@ -1,0 +1,23 @@
+
+{% for sys in groups["all"] %}
+{% if sys not in groups["control"] %}
+
+# Collect Information for Managed Host {{ hostvars[sys].inventory_hostname }} #
+My Floor Level is {{ hostvars[sys].floor_level }}
+Loop System Var	    = {{ sys }}
+Architecture        = {{ hostvars[sys].ansible_facts['architecture'] }}
+Date                = {{ hostvars[sys].ansible_facts['date_time']['date'] }}
+Time                = {{ hostvars[sys].ansible_facts['date_time']['time'] }}
+IP Address          = {{ hostvars[sys].ansible_facts['default_ipv4']['address'] }}
+MAC Address         = {{ hostvars[sys].ansible_facts['default_ipv4']['macaddress'] }}
+Hard Disk           = {{ hostvars[sys].ansible_facts['devices']['sda']['size'] }}
+OS Type             = {{ hostvars[sys].ansible_facts['distribution'] }}
+FQDN                = {{ hostvars[sys].ansible_facts['fqdn'] }}
+Hostname            = {{ hostvars[sys].ansible_facts['hostname'] }}
+Kernel              = {{ hostvars[sys].ansible_facts['kernel'] }}
+Free Memory         = {{ hostvars[sys].ansible_facts['memory_mb']['real']['free'] }}
+Total Memory        = {{ hostvars[sys].ansible_facts['memory_mb']['real']['total'] }}
+Python Version      = {{ hostvars[sys].ansible_facts['python_version'] }}
+
+{% endif %}
+{% endfor %}

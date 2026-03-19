@@ -1,7 +1,8 @@
-utility.lab.example.com
-
 [stockholm]
-serverb.lab.example.com ansible_port=33
+# WEB_Stockhom ansible_host=serverb.lab.example.com 
+# WEB_BORLANGE ansible_host=172.25.250.11
+serverb.lab.example.com 
+# ansible_port=33
 
 [all:vars]
 floor_level="Level 3 Inventory file"
@@ -9,10 +10,13 @@ floor_level="Level 3 Inventory file"
 [dev]
 servera.lab.example.com
 serverd.lab.example.com floor_level="Level 8 Inventory file SERVER D"
-serverb.lab.example.com ansible_port=22
 
 [borlange]
+# DB_EDIP ansible_host=serverc.lab.example.com
 serverc.lab.example.com
+
+[control]
+workstation.lab.example.com
 
 
 # [combine:children]

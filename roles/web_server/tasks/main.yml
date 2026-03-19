@@ -1,0 +1,19 @@
+---
+# tasks file for web_server
+
+- name: Install Web Server
+  ansible.builtin.dnf:
+    name: "{{ web_server_package }}"
+    state: "{{ web_server_state }}"
+  notify:
+    - Package Installed
+    - Start Web Service
+ 
+- name: Deploy a Simple App
+  ansible.builtin.copy:
+    content: "{{ web_server_content }}"
+    dest: "{{ web_server_path }}{{ web_server_index }}"
+  notify:
+    - App Installed
+    - Start Web Service
+

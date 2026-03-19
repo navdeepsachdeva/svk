@@ -1,0 +1,15 @@
+- name: Facts Demo
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Print Facts
+      ansible.builtin.copy:
+        content: |
+          Architecture        = {{ ansible_facts['architecture'] }}
+          Date                = {{ ansible_facts['date_time']['date'] }}
+          Time                = {{ ansible_facts['date_time']['time'] }}
+          IP Address          = {{ ansible_facts['default_ipv4']['address'] }}
+          Python Version      = {{ ansible_facts['python_version'] }}
+          User Laptop         = {{ ansible_facts.ansible_local.emp.user.emp_name }}
+          User Manager        = {{ ansible_facts.ansible_local.emp.dept.dept_manager }}
+        dest: /tmp/info.txt

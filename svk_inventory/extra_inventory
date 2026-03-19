@@ -1,0 +1,38 @@
+# utility.lab.example.com
+# [web]
+# web1.na.example.com
+# web2.eu.example.com
+# 
+# [db]
+# db1.na.example.com
+# db2.eu.example.com
+# 
+# [cache]
+# redis1.na.example.com
+# redis2.eu.example.com
+# 
+# [loadbalancer]
+# lb1.na.example.com
+# lb2.eu.example.com
+# 
+# [dev]
+# web1.na.example.com
+# db1.na.example.com
+# redis1.na.example.com
+# lb1.na.example.com
+# 
+# [prod]
+# web2.eu.example.com
+# db2.eu.example.com
+# redis2.eu.example.com
+# lb2.eu.example.com
+# 
+# [north_america:children]
+# dev
+# 
+# [europe:children]
+# prod
+# 
+# [datacenter:children]
+# north_america
+# europe

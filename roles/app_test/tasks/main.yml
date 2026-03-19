@@ -1,0 +1,14 @@
+---
+# tasks file for app_test
+#
+
+- name: Access Web Server
+  ansible.builtin.uri:
+    url: "{{ app_test_url }}"
+    return_content: "{{ app_test_return }}"
+  register: captured
+     
+- name: Print Output
+  ansible.builtin.debug:
+    var: captured.content
+  ignore_errors: true

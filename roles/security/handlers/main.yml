@@ -1,0 +1,10 @@
+---
+# handlers file for security
+
+- name: Firewall Software Installed
+  ansible.builtin.debug:
+    msg: "{{ security_package }} Installed Success"
+
+- name: Firewall Web Port Opened
+  ansible.builtin.debug:
+    msg: "{{ security_port }} Opened Successfully"

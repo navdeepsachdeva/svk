@@ -1,0 +1,4 @@
+---
+# defaults file for app_test
+app_test_url: http://servera.lab.example.com
+app_test_return: true

@@ -1,5 +1,6 @@
 - name: Variable Demo
   hosts: dev,borlange
+  # hosts: 'web,db,!dev,!web2.eu.example.com'
   gather_facts: false
   vars:
     floor_level: "Level 12 Play vars"

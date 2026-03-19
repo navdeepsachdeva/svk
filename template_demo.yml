@@ -1,0 +1,8 @@
+- name: Simple Template Demo
+  hosts: servera*
+  gather_facts: true
+  tasks:
+    - name: Replace Template with Values
+      ansible.builtin.template:
+        src: j2/simple.j2
+        dest: /etc/ssh/sshd_config

@@ -1,0 +1,15 @@
+- name: Ldap Setup Task 1
+  ansible.builtin.debug:
+    msg: "Setup LDAP Server Task 1"
+
+- name: Ldap Setup Task 2
+  ansible.builtin.debug:
+    msg: "Setup LDAP Server Task 2"
+
+- name: Ldap Setup Task 3
+  ansible.builtin.debug:
+    msg: "Setup LDAP Server Task 3"
+
+- name: Ldap Setup Task 4
+  ansible.builtin.debug:
+    msg: "Setup LDAP Server Task 4"

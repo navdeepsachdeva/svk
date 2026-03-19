@@ -1,0 +1,15 @@
+---
+# handlers file for web_server
+
+- name: App Installed
+  ansible.builtin.debug:
+    msg: "Success App Installed"
+
+- name: Start Web Service
+  ansible.builtin.systemd_service:
+    name: "{{ web_server_service }}"
+    state: restarted
+
+- name: Package Installed
+  ansible.builtin.debug:
+    msg: "Success Package Installed"
