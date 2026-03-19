@@ -1,5 +1,6 @@
 - name: External ROles Test
   hosts: servera*
   roles:
-    - name: geerlingguy.mysql
-    - name: cisco.catalystwan.health_checks
+    - name: redhat.rhel_system_roles.timesync
+    # - name: geerlingguy.mysql
+    # - name: cisco.catalystwan.health_checks

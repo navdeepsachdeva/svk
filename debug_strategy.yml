@@ -1,0 +1,43 @@
+- name: Configuration Play
+  hosts: servera*
+  gather_facts: false
+  become: true
+  remote_user: devops
+  strategy: debug
+  tasks:
+    - name: Task 1
+      ansible.builtin.shell: sleep 2
+      register: captured
+
+    - name: Task 20
+      ansible.builtin.debug:
+        msg: "Task 20 for No Reason"
+
+    - name: Install Web Server Task 21
+      ansible.builtin.dnf:
+        name: httpdddd
+        state: present
+      # task.args
+      # task.args['name']="httpd"
+      # task.args
+      # redo
+
+    - name: Deploy a Simple App Task 22
+      ansible.builtin.copy:
+        content: "Simple Index Page {{ captured.changed }}"
+        dest: /var/wwwwww/html/index.html
+      # task.args
+      # task.args['dest']="/var/www/html/index.html"
+      # task.args
+      # redo
+
+    - name: Start Web Service Task 23
+      ansible.builtin.systemd_service:
+        name: httpdddd
+        stateeee: started
+      # task.args
+      # task.args['name']="httpd"
+      # task.args['state']="started"
+      # del(task.args['stateeee'])
+      # task.args
+      # redo

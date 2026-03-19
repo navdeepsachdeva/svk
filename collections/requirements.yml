@@ -1,9 +1,10 @@
 collections:
-  - name: cisco.catalystwan
-    version: 0.2.2
-  
-  - name: community.general
-  
-  - name: community.crypto
-  
-  - name: oracle.oci
+  - name: /home/student/intro-configure/redhat-rhel_system_roles-1.108.6.tar.gz
+  # - name: cisco.catalystwan
+  #   version: 0.2.2
+  # 
+  # - name: community.general
+  # 
+  # - name: community.crypto
+  # 
+  # - name: oracle.oci
